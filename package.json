@@ -1,0 +1,15 @@
+{
+  "name": "com.gamerebellion.sdk",
+  "version": "0.9.0",
+  "displayName": "GameRebellion SDK",
+  "description": "GameRebellion analytics SDK for Unity.",
+  "unity": "2020.3",
+  "keywords": [
+    "analytics",
+    "sdk",
+    "gamerebellion"
+  ],
+  "author": {
+    "name": "GameRebellion"
+  }
+}

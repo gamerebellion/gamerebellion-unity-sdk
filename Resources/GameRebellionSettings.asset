@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a9b3f2b3d8e4c3a8b8f5f4a6b0c1d2e, type: 3}
+  m_Name: GameRebellionSettings
+  m_EditorClassIdentifier: 
+  GameVersion: 
+  BuildNumber: 
+  Environment: 1
+  BatchSizeBytes: 65536
+  BatchMaxEvents: 100
+  FlushIntervalMs: 30000
+  EnableCompression: 1
+  AutoTrackSession: 1
+  TransportType: 1
