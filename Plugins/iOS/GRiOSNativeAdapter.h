@@ -15,6 +15,9 @@ extern "C" {
 // Attribution & Advertising IDs
 const char* gr_ios_get_idfa(void);
 const char* gr_ios_get_idfv(void);
+
+// Persistent Device Identity (Keychain-backed UUID, survives reinstalls)
+const char* gr_ios_get_device_id(void);
 int gr_ios_get_att_status(void);  // 0=NotDetermined, 1=Restricted, 2=Denied, 3=Authorized
 void gr_ios_request_att(void);
 

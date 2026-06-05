@@ -12,6 +12,7 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <Security/Security.h>
 #import <mach/mach.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -24,8 +25,13 @@ static NSString* FormatDateIso8601(NSDate* date) {
     dispatch_once(&onceToken, ^{
         formatter = [[NSDateFormatter alloc] init];
         formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        // Pin the Gregorian calendar so a non-Gregorian device calendar (e.g. Buddhist,
+        // Islamic) cannot shift the formatted year in ingested timestamps.
+        formatter.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX";
+        // Lowercase 'xxxxx' forces a numeric zero offset (+00:00) instead of 'Z',
+        // keeping the format byte-identical to the Android and PC adapters.
+        formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSxxxxx";
     });
     return [formatter stringFromDate:date];
 }
@@ -75,6 +81,39 @@ const char* gr_ios_get_idfa() {
 const char* gr_ios_get_idfv() {
     NSString* idfv = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     return CopyNSString(idfv);
+}
+
+const char* gr_ios_get_device_id() {
+    static NSString* const kService = @"com.gamerebellion.sdk";
+    static NSString* const kAccount = @"gr_device_id";
+
+    // Try to read existing UUID from Keychain
+    NSDictionary* query = @{
+        (__bridge id)kSecClass:        (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService:  kService,
+        (__bridge id)kSecAttrAccount:  kAccount,
+        (__bridge id)kSecReturnData:   @YES,
+        (__bridge id)kSecMatchLimit:   (__bridge id)kSecMatchLimitOne
+    };
+    CFTypeRef result = NULL;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
+    if (status == errSecSuccess && result) {
+        NSData* data = (__bridge_transfer NSData*)result;
+        NSString* stored = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (stored.length > 0) return CopyNSString(stored);
+    }
+
+    // First launch — generate and persist a new UUID
+    NSString* newId = [[NSUUID UUID] UUIDString];
+    NSDictionary* addQuery = @{
+        (__bridge id)kSecClass:           (__bridge id)kSecClassGenericPassword,
+        (__bridge id)kSecAttrService:     kService,
+        (__bridge id)kSecAttrAccount:     kAccount,
+        (__bridge id)kSecAttrAccessible:  (__bridge id)kSecAttrAccessibleAfterFirstUnlock,
+        (__bridge id)kSecValueData:       [newId dataUsingEncoding:NSUTF8StringEncoding]
+    };
+    SecItemAdd((__bridge CFDictionaryRef)addQuery, NULL);
+    return CopyNSString(newId);
 }
 
 int gr_ios_get_att_status() {

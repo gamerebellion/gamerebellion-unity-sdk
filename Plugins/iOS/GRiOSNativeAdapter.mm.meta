@@ -28,6 +28,8 @@ PluginImporter:
       enabled: 1
       settings:
         AddToEmbeddedBinaries: false
+        CompileFlags:
+        FrameworkDependencies: AdSupport;AppTrackingTransparency;AdServices;CoreTelephony;SystemConfiguration
   userData: 
   assetBundleName: 
   assetBundleVariant: 

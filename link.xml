@@ -1,0 +1,28 @@
+<linker>
+  <!--
+    Preserve GameRebellion SDK assemblies from IL2CPP managed code stripping.
+
+    The SDK uses reflection-based provider instantiation, runtime type checks,
+    and [DllImport] P/Invoke — all patterns that the linker may incorrectly
+    identify as unused.  Preserving entire assemblies is the safest approach
+    for a precompiled plugin distributed via UPM and .unitypackage.
+
+    NOTE: Unity does not natively discover link.xml inside UPM packages.
+    The companion Editor script (GRLinkXmlPreprocessor.cs) copies this file
+    to Assets/ before each build so the linker can find it.
+  -->
+
+  <!-- Core SDK assemblies (platform-specific managed DLLs) -->
+  <assembly fullname="GameRebellion.Core" preserve="all"/>
+
+  <!-- BCL dependencies bundled with the SDK (not provided by Unity's runtime) -->
+  <assembly fullname="Microsoft.Bcl.AsyncInterfaces" preserve="all"/>
+  <assembly fullname="System.Buffers" preserve="all"/>
+  <assembly fullname="System.Memory" preserve="all"/>
+  <assembly fullname="System.Numerics.Vectors" preserve="all"/>
+  <assembly fullname="System.Runtime.CompilerServices.Unsafe" preserve="all"/>
+  <assembly fullname="System.Text.Encodings.Web" preserve="all"/>
+  <assembly fullname="System.Text.Json" preserve="all"/>
+  <assembly fullname="System.Threading.Channels" preserve="all"/>
+  <assembly fullname="System.Threading.Tasks.Extensions" preserve="all"/>
+</linker>
