@@ -2,7 +2,7 @@
 
 **Package:** com.gamerebellion.sdk
 **Company:** GameRebellion Inc.
-**Version:** 0.9.6
+**Version:** 0.9.7
 **Last updated:** April 16, 2026
 
 > By downloading, installing, or using this package, you agree to be bound by the terms of this agreement and GameRebellion's [Terms of Service](https://gamerebellion.com/terms-of-service). If you do not accept these terms, you must not use this package.

@@ -31,6 +31,8 @@ namespace GameRebellionSdk.Unity.Adapters
                 // Both enums have same values (0=Production, 1=Staging, 2=Development)
                 var coreEnv = (global::GameRebellionSdk.Core.Configuration.GrEnvironment)(int)config.Environment;
 
+                global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetDebugLogging(config.IsDebug);
+
                 return global::GameRebellionSdk.Core.GameRebellionUnityAPI.Initialize(
                     config.ApiKey,
                     config.GameVersion,
@@ -39,8 +41,8 @@ namespace GameRebellionSdk.Unity.Adapters
                     config.BatchSizeBytes,
                     config.BatchMaxEvents,
                     config.FlushIntervalMs,
-                    config.EnableCompression,
-                    config.AutoTrackSession
+                    enableCompression: true,
+                    autoTrackSession: true
                 );
             }
             catch (Exception ex)

@@ -18,11 +18,47 @@ public static class GameRebellion
         Error = 6
     }
 
+    public enum GrEnvironment
+    {
+        Production = 0,
+        Staging = 1,
+        Development = 2
+    }
+
     public static bool IsInitialized => GameRebellionSdk.Unity.GameRebellion.IsInitialized;
 
+    /// <summary>
+    /// Initialize the SDK using the environment configured in the GameRebellionSettings asset.
+    /// </summary>
     public static bool Initialize(string apiKey)
     {
         return GameRebellionSdk.Unity.GameRebellion.Initialize(apiKey);
+    }
+
+    /// <summary>
+    /// Initialize the SDK targeting a specific environment, overriding the value
+    /// configured in the GameRebellionSettings asset.
+    /// </summary>
+    public static bool Initialize(string apiKey, GrEnvironment environment)
+    {
+        return GameRebellionSdk.Unity.GameRebellion.Initialize(
+            apiKey,
+            (GameRebellionSdk.Unity.GrEnvironment)environment
+        );
+    }
+
+    /// <summary>
+    /// Initialize the SDK targeting a specific environment and debug-logging mode,
+    /// overriding both values configured in the GameRebellionSettings asset.
+    /// With isDebug enabled the SDK emits verbose debug logs regardless of environment.
+    /// </summary>
+    public static bool Initialize(string apiKey, GrEnvironment environment, bool isDebug)
+    {
+        return GameRebellionSdk.Unity.GameRebellion.Initialize(
+            apiKey,
+            (GameRebellionSdk.Unity.GrEnvironment)environment,
+            isDebug
+        );
     }
 
     public static void Shutdown(string endReason = "normal")

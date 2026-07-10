@@ -33,6 +33,9 @@ namespace GameRebellionSdk.Unity.Adapters
         
         [DllImport(LibraryName, EntryPoint = "gr_initialize", CharSet = CharSet.Ansi)]
         private static extern int gr_initialize(ref GrConfigNative config);
+
+        [DllImport(LibraryName, EntryPoint = "gr_set_debug_logging")]
+        private static extern void gr_set_debug_logging(int enabled);
         
         [DllImport(LibraryName, EntryPoint = "gr_shutdown", CharSet = CharSet.Ansi)]
         private static extern int gr_shutdown([MarshalAs(UnmanagedType.LPStr)] string endReason);
@@ -322,10 +325,20 @@ namespace GameRebellionSdk.Unity.Adapters
                     BatchSizeBytes = config.BatchSizeBytes,
                     BatchMaxEvents = config.BatchMaxEvents,
                     FlushIntervalMs = config.FlushIntervalMs,
-                    EnableCompression = config.EnableCompression ? 1 : 0,
-                    AutoTrackSession = config.AutoTrackSession ? 1 : 0
+                    // Internal transport/session settings; not exposed to games.
+                    EnableCompression = 1,
+                    AutoTrackSession = 1
                 };
-                
+
+                try
+                {
+                    gr_set_debug_logging(config.IsDebug ? 1 : 0);
+                }
+                catch (EntryPointNotFoundException)
+                {
+                    // Older native core without the export; debug logging stays env-driven.
+                }
+
                 return gr_initialize(ref nativeConfig);
             }
             catch (DllNotFoundException ex)

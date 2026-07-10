@@ -17,13 +17,11 @@ namespace GameRebellionSdk.Unity
         public string ApiKey { get; set; } = "";
         public string GameVersion { get; set; } = "";
         public string BuildNumber { get; set; } = "";
-        public GrEnvironment Environment { get; set; } = GrEnvironment.Development;
+        public GrEnvironment Environment { get; set; } = GrEnvironment.Production;
         public uint BatchSizeBytes { get; set; } = 65536;
         public uint BatchMaxEvents { get; set; } = 100;
         public uint FlushIntervalMs { get; set; } = 30000;
-        public bool EnableCompression { get; set; } = true;
-        public bool AutoTrackSession { get; set; } = true;
-        public uint TransportType { get; set; } = 1;
+        public bool IsDebug { get; set; } = false;
     }
 
     /// <summary>
@@ -54,7 +52,34 @@ namespace GameRebellionSdk.Unity
         return GameRebellionAdapterFactory.GetAdapter();
     }
 
+    /// <summary>
+    /// Initialize the SDK using the environment configured in the GameRebellionSettings asset.
+    /// </summary>
     public static bool Initialize(string apiKey)
+    {
+        return InitializeInternal(apiKey, null, null);
+    }
+
+    /// <summary>
+    /// Initialize the SDK targeting a specific environment, overriding the value
+    /// configured in the GameRebellionSettings asset.
+    /// </summary>
+    public static bool Initialize(string apiKey, GrEnvironment environment)
+    {
+        return InitializeInternal(apiKey, environment, null);
+    }
+
+    /// <summary>
+    /// Initialize the SDK targeting a specific environment and debug-logging mode,
+    /// overriding both values configured in the GameRebellionSettings asset.
+    /// With isDebug enabled the SDK emits verbose debug logs regardless of environment.
+    /// </summary>
+    public static bool Initialize(string apiKey, GrEnvironment environment, bool isDebug)
+    {
+        return InitializeInternal(apiKey, environment, isDebug);
+    }
+
+    private static bool InitializeInternal(string apiKey, GrEnvironment? environmentOverride, bool? isDebugOverride)
     {
         if (_isInitialized)
         {
@@ -70,6 +95,15 @@ namespace GameRebellionSdk.Unity
         }
 
         var config = BuildConfigFromSettings(settings, apiKey);
+        if (environmentOverride.HasValue)
+        {
+            config.Environment = environmentOverride.Value;
+        }
+        if (isDebugOverride.HasValue)
+        {
+            config.IsDebug = isDebugOverride.Value;
+        }
+
         if (!ValidateConfig(config))
         {
             return false;
@@ -77,7 +111,8 @@ namespace GameRebellionSdk.Unity
 
         try
         {
-            Debug.Log($"[GRC] Initializing SDK: Env={config.Environment}");
+            var envSource = environmentOverride.HasValue ? "override" : "settings";
+            Debug.Log($"[GRC] Initializing SDK: Env={config.Environment} ({envSource}), Debug={config.IsDebug}");
             var adapter = GetAdapter();
             int result = adapter.Initialize(config);
 
@@ -122,9 +157,7 @@ namespace GameRebellionSdk.Unity
             BatchSizeBytes = settings.BatchSizeBytes,
             BatchMaxEvents = settings.BatchMaxEvents,
             FlushIntervalMs = settings.FlushIntervalMs,
-            EnableCompression = settings.EnableCompression,
-            AutoTrackSession = settings.AutoTrackSession,
-            TransportType = settings.TransportType
+            IsDebug = settings.IsDebug
         };
 
         return config;

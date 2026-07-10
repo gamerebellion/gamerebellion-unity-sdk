@@ -41,6 +41,8 @@ namespace GameRebellionSdk.Unity.Adapters
                 var coreEnv = (global::GameRebellionSdk.Core.Configuration.GrEnvironment)(int)config.Environment;
                 UnityEngine.Debug.Log($"[AndroidAdapter] Environment converted: {coreEnv}");
 
+                global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetDebugLogging(config.IsDebug);
+
                 UnityEngine.Debug.Log("[AndroidAdapter] Calling GameRebellionUnityAPI.Initialize...");
                 var result = global::GameRebellionSdk.Core.GameRebellionUnityAPI.Initialize(
                     config.ApiKey,
@@ -50,8 +52,8 @@ namespace GameRebellionSdk.Unity.Adapters
                     config.BatchSizeBytes,
                     config.BatchMaxEvents,
                     config.FlushIntervalMs,
-                    config.EnableCompression,
-                    config.AutoTrackSession
+                    enableCompression: true,
+                    autoTrackSession: true
                 );
                 UnityEngine.Debug.Log($"[AndroidAdapter] Initialize returned: {result}");
                 return result;

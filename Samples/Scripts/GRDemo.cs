@@ -23,7 +23,7 @@ public class GRDemo : MonoBehaviour
     private void Initialize()
     {
         Debug.Log("=== GameRebellion SDK Demo ===");
-    
+
         bool initSuccess = GameRebellion.Initialize("YOUR_API_KEY");
         gameObject.AddComponent<GRMetricsCollector>();
         gameObject.AddComponent<GRLogDrainer>();

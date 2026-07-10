@@ -90,4 +90,56 @@ GameRebellion.TrackProgression(new GrProgressionEvent
 });
 ```
 
+---
+
+## Configuration
+
+The SDK reads its settings from the `GameRebellionSettings` asset bundled with the package.
+Defaults are production-ready — most games only ever call `Initialize(apiKey)`.
+
+> Installed via UPM (git URL)? The bundled asset is read-only — use the `Initialize`
+> overloads below to change environment or logging. Installed via `.unitypackage`?
+> You can also edit the asset directly in the Inspector.
+
+### Environments
+
+The SDK targets **Production** by default. Point QA or internal builds at Staging
+without touching the asset:
+
+```csharp
+// Shipped game — Production (asset default)
+GameRebellion.Initialize("YOUR_API_KEY");
+
+// QA / internal build
+GameRebellion.Initialize("YOUR_API_KEY", GameRebellion.GrEnvironment.Staging);
+```
+
+### Debug logging
+
+Verbose SDK logs are on automatically for Staging and Development. To get the same
+logs in a Production build (e.g. diagnosing an integration issue), pass `isDebug`:
+
+```csharp
+GameRebellion.Initialize("YOUR_API_KEY", GameRebellion.GrEnvironment.Production, isDebug: true);
+```
+
+Keep `isDebug` off in release builds.
+
+### Settings reference
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `GameVersion` | *(empty)* | Version reported with events. Empty = `Application.version` from Player Settings. |
+| `BuildNumber` | *(empty)* | Build identifier reported with events. Empty = `Application.buildGUID`. |
+| `Environment` | `Production` | Backend the SDK talks to. Overridable via `Initialize(apiKey, environment)`. |
+| `BatchSizeBytes` | `65536` | Max size of one event batch before sending. Clamped to 1 KB – 1 MB. |
+| `BatchMaxEvents` | `100` | Max events per batch before sending. Clamped to 1 – 1000. |
+| `FlushIntervalMs` | `30000` | How often buffered events are flushed even if batch limits aren't reached. Clamped to 1 s – 5 min. |
+| `IsDebug` | `false` | Verbose SDK logs in any environment. Overridable via `Initialize(apiKey, environment, isDebug)`. |
+
+Batching defaults are tuned for production; lowering them gives fresher data at the
+cost of more network and battery use.
+
+---
+
 Full integration guide at **[docs.gamerebellion.com](https://docs.gamerebellion.com)**.
