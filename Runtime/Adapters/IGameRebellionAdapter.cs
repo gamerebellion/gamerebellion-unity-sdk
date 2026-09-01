@@ -10,7 +10,10 @@ namespace GameRebellionSdk.Unity.Adapters
     {
         int Initialize(GrConfig config);
         int Shutdown(string? endReason = null);
-        int SetConsent(bool granted);
+        /// <summary>0=unknown, 1=granted, 2=denied (GameRebellion.Consent).</summary>
+        int SetConsent(int state);
+        /// <summary>Opt-in consent policy. Call before Initialize.</summary>
+        int SetConsentPolicy(bool requireConsent);
         int SetPaused(bool paused);
         int SetOnline(bool online);
         int Flush();

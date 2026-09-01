@@ -143,6 +143,13 @@ const char* gr_ios_get_device_model() {
     return CopyNSString(model);
 }
 
+const char* gr_ios_get_device_name() {
+    // The user-assigned name ("Dmytro's iPhone"). From iOS 16 this returns the device
+    // model unless the app holds the user-assigned-device-name entitlement, which is
+    // fine -- it is still the name the system reports for the device.
+    return CopyNSString([[UIDevice currentDevice] name]);
+}
+
 const char* gr_ios_get_os_version() {
     NSString* version = [[UIDevice currentDevice] systemVersion];
     NSString* osVersion = [NSString stringWithFormat:@"iOS %@", version];

@@ -25,7 +25,12 @@ namespace GameRebellionSdk.Unity.Adapters
             return 0;
         }
 
-        public int SetConsent(bool granted)
+        public int SetConsent(int state)
+        {
+            return 0;
+        }
+
+        public int SetConsentPolicy(bool requireConsent)
         {
             return 0;
         }

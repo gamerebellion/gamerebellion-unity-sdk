@@ -22,6 +22,8 @@ namespace GameRebellionSdk.Unity
         public uint BatchMaxEvents { get; set; } = 100;
         public uint FlushIntervalMs { get; set; } = 30000;
         public bool IsDebug { get; set; } = false;
+        /// <summary>Opt-in consent policy; see GameRebellionSettings.RequireConsent.</summary>
+        public bool RequireConsent { get; set; } = false;
     }
 
     /// <summary>
@@ -114,6 +116,15 @@ namespace GameRebellionSdk.Unity
             var envSource = environmentOverride.HasValue ? "override" : "settings";
             Debug.Log($"[GRC] Initializing SDK: Env={config.Environment} ({envSource}), Debug={config.IsDebug}");
             var adapter = GetAdapter();
+
+            // Must precede Initialize: the pipeline reads the policy when it builds the
+            // consent gate, so setting it afterwards would leave the first events ungated.
+            adapter.SetConsentPolicy(config.RequireConsent);
+            if (config.RequireConsent)
+            {
+                Debug.Log("[GRC] RequireConsent is on -- events are withheld until SetConsent(Consent.Granted)");
+            }
+
             int result = adapter.Initialize(config);
 
             if (result == 0)
@@ -151,16 +162,34 @@ namespace GameRebellionSdk.Unity
         var config = new GrConfig
         {
             ApiKey = apiKey ?? string.Empty,
-            GameVersion = string.IsNullOrEmpty(settings.GameVersion) ? (Application.version ?? string.Empty) : settings.GameVersion,
-            BuildNumber = string.IsNullOrEmpty(settings.BuildNumber) ? (Application.buildGUID ?? Application.version ?? string.Empty) : settings.BuildNumber,
+            GameVersion = FirstNonEmpty(settings.GameVersion, Application.version),
+            BuildNumber = FirstNonEmpty(settings.BuildNumber, Application.buildGUID, Application.version),
             Environment = settings.Environment,
             BatchSizeBytes = settings.BatchSizeBytes,
             BatchMaxEvents = settings.BatchMaxEvents,
             FlushIntervalMs = settings.FlushIntervalMs,
-            IsDebug = settings.IsDebug
+            IsDebug = settings.IsDebug,
+            RequireConsent = settings.RequireConsent
         };
 
         return config;
+    }
+
+    /// <summary>
+    /// First value that is neither null nor blank, else "". Unity hands back empty
+    /// strings rather than nulls (Application.buildGUID is "" in the Editor and on
+    /// several platforms), so ?? chains silently pick the blank.
+    /// </summary>
+    private static string FirstNonEmpty(params string?[] candidates)
+    {
+        foreach (var candidate in candidates)
+        {
+            if (!string.IsNullOrWhiteSpace(candidate))
+            {
+                return candidate!;
+            }
+        }
+        return string.Empty;
     }
 
     private static GameRebellionSettings? LoadSettings()
@@ -208,8 +237,10 @@ namespace GameRebellionSdk.Unity
     {
         Debug.Log($"[GRC] SetConsent: {consent}");
         var adapter = GetAdapter();
-        bool granted = consent == Consent.Granted;
-        int result = adapter.SetConsent(granted);
+        // Passed through whole. This used to collapse to `consent == Consent.Granted`,
+        // which made Denied and Unknown indistinguishable downstream -- so a player who
+        // declined looked exactly like one who had not been asked.
+        int result = adapter.SetConsent((int)consent);
         if (result != 0)
         {
             Debug.LogWarning($"[GRC] SetConsent failed with code: {result}");

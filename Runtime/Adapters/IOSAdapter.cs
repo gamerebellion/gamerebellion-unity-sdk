@@ -57,9 +57,14 @@ namespace GameRebellionSdk.Unity.Adapters
             return global::GameRebellionSdk.Core.GameRebellionUnityAPI.Shutdown(endReason);
         }
 
-        public int SetConsent(bool granted)
+        public int SetConsent(int state)
         {
-            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsent(granted);
+            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsent(state);
+        }
+
+        public int SetConsentPolicy(bool requireConsent)
+        {
+            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsentPolicy(requireConsent);
         }
 
         public int SetPaused(bool paused)
@@ -294,7 +299,8 @@ namespace GameRebellionSdk.Unity.Adapters
         // Stub implementations for Editor and non-iOS platforms
         public int Initialize(GrConfig config) => -1;
         public int Shutdown(string endReason = null) => -1;
-        public int SetConsent(bool granted) => -1;
+        public int SetConsent(int state) => -1;
+        public int SetConsentPolicy(bool requireConsent) => -1;
         public int SetPaused(bool paused) => -1;
         public int SetOnline(bool online) => -1;
         public int Flush() => -1;

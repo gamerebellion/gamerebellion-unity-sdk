@@ -50,5 +50,16 @@ namespace GameRebellionSdk.Unity
         [Header("Debug")]
         [Tooltip("Emit verbose SDK debug logs (same detail as Staging/Development) regardless of environment. Keep disabled in release builds.")]
         public bool IsDebug = false;
+
+        [Tooltip(
+            "Require explicit consent before anything is transmitted (opt-in model).\n\n" +
+            "Off by default, matching how AppsFlyer, Adjust and GameAnalytics behave when a " +
+            "game sends no consent signal: events flow until the player explicitly declines " +
+            "via SetConsent(Consent.Denied).\n\n" +
+            "Turn on for an opt-in model (typically EU/GDPR builds). Events are then withheld " +
+            "in memory -- never written to the event cache -- until SetConsent is called: " +
+            "Granted replays them so the launch session_start survives the prompt, Denied " +
+            "discards them.")]
+        public bool RequireConsent = false;
     }
 }

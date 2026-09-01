@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 /// <summary>
-/// Automatically tracks FPS and memory metrics for GameRebellion SDK.
+/// Feeds per-frame FPS to the GameRebellion SDK -- the one metric only the engine
+/// can measure. Memory is sampled by the SDK itself, on every platform, so that the
+/// number means the same thing here as it does in the Unreal SDK.
 /// Attach this to a GameObject in your scene or have it auto-created by SDK.
 /// </summary>
 public class GRMetricsCollector : MonoBehaviour
@@ -10,14 +12,6 @@ public class GRMetricsCollector : MonoBehaviour
     [Header("FPS Tracking")]
     [Tooltip("Track FPS every frame (recommended)")]
     public bool trackFPS = true;
-    
-    [Header("Memory Tracking")]
-    [Tooltip("Track memory usage")]
-    public bool trackMemory = true;
-    
-    [Tooltip("Memory sampling interval in seconds")]
-    [Range(0.1f, 5.0f)]
-    public float memorySampleInterval = 0.5f;
     
     [Header("Debug")]
     [Tooltip("Show metrics in console")]
@@ -27,7 +21,6 @@ public class GRMetricsCollector : MonoBehaviour
     [Range(1f, 10f)]
     public float logInterval = 5f;
     
-    private float _memoryTimer = 0f;
     private float _logTimer = 0f;
     private int _frameCount = 0;
     private float _fpsSum = 0f;
@@ -50,21 +43,10 @@ public class GRMetricsCollector : MonoBehaviour
             }
         }
         
-        // Track memory at intervals
-        if (trackMemory)
-        {
-            _memoryTimer += Time.deltaTime;
-            if (_memoryTimer >= memorySampleInterval)
-            {
-                _memoryTimer = 0f;
-                
-                // Use Unity Profiler for accurate memory info
-                long memoryBytes = Profiler.GetTotalAllocatedMemoryLong();
-                float memoryMB = memoryBytes / (1024f * 1024f);
-                
-                GameRebellion.RecordMemory(memoryMB);
-            }
-        }
+        // Memory is sampled by the SDK itself now. It reads the same quantity the
+        // platform tools report (PSS on Android, phys_footprint on iOS, working set
+        // on desktop); pushing Unity's allocator total from here made memory_peak
+        // mean something different in Unity than in Unreal.
         
         // Debug logging
         if (logMetrics)
@@ -73,10 +55,10 @@ public class GRMetricsCollector : MonoBehaviour
             if (_logTimer >= logInterval && _frameCount > 0)
             {
                 float avgFps = _fpsSum / _frameCount;
-                long memoryBytes = Profiler.GetTotalAllocatedMemoryLong();
-                float memoryMB = memoryBytes / (1024f * 1024f);
-                
-                Debug.Log($"[GR Metrics] Avg FPS: {avgFps:F1}, Memory: {memoryMB:F1} MB");
+                // Local diagnostic only -- the reported figure comes from the SDK.
+                float allocatedMB = Profiler.GetTotalAllocatedMemoryLong() / (1024f * 1024f);
+
+                Debug.Log($"[GR Metrics] Avg FPS: {avgFps:F1}, Unity allocated: {allocatedMB:F1} MB");
                 
                 _logTimer = 0f;
                 _frameCount = 0;

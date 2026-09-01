@@ -113,6 +113,12 @@ namespace GameRebellionSdk.Unity.Adapters
                                     return false;
                                 }
 
+                                // Before initialize(): the adapter kicks off its GAID lookup
+                                // in its constructor, so a stored refusal has to be in place
+                                // first or the read happens regardless.
+                                adapterClass.CallStatic("setConsentDenied",
+                                    global::GameRebellionSdk.Core.Configuration.ConsentPolicy.SuppressesCollection);
+
                                 adapterClass.CallStatic("initialize", context);
                                 UnityEngine.Debug.Log("[AndroidAdapter] Native adapter initialized successfully");
                                 return true;
@@ -134,9 +140,31 @@ namespace GameRebellionSdk.Unity.Adapters
             return global::GameRebellionSdk.Core.GameRebellionUnityAPI.Shutdown(endReason);
         }
 
-        public int SetConsent(bool granted)
+        public int SetConsent(int state)
         {
-            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsent(granted);
+            // Push to the Java shim too: a refusal has to stop the GAID lookup, and a
+            // later grant has to let it run after all.
+            try
+            {
+                using (var adapterClass = new UnityEngine.AndroidJavaClass(
+                    "com.gamerebellion.adapter.GRAndroidNativeAdapter"))
+                {
+                    adapterClass.CallStatic("setConsentDenied",
+                        state == (int)global::GameRebellionSdk.Core.Configuration.GrConsent.Denied);
+                }
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning(
+                    $"[AndroidAdapter] Could not push consent to the native adapter: {ex.Message}");
+            }
+
+            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsent(state);
+        }
+
+        public int SetConsentPolicy(bool requireConsent)
+        {
+            return global::GameRebellionSdk.Core.GameRebellionUnityAPI.SetConsentPolicy(requireConsent);
         }
 
         public int SetPaused(bool paused)
@@ -371,7 +399,8 @@ namespace GameRebellionSdk.Unity.Adapters
         // Stub implementations for Editor and non-Android platforms
         public int Initialize(GrConfig config) => -1;
         public int Shutdown(string endReason = null) => -1;
-        public int SetConsent(bool granted) => -1;
+        public int SetConsent(int state) => -1;
+        public int SetConsentPolicy(bool requireConsent) => -1;
         public int SetPaused(bool paused) => -1;
         public int SetOnline(bool online) => -1;
         public int Flush() => -1;

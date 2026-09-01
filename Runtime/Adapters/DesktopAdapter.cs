@@ -17,6 +17,32 @@ namespace GameRebellionSdk.Unity.Adapters
         private const int BufferSize = 4096;
         private bool _nativeAvailable = true;
         
+        /// <summary>
+        /// Sparse host-info block. Every string field may be IntPtr.Zero and every
+        /// double may be NaN, meaning "not supplied" -- the SDK then uses its own
+        /// platform provider for that field. We only fill in what Unity alone knows.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        private struct GrDeviceInfoNative
+        {
+            public IntPtr Platform;
+            public IntPtr DeviceModel;
+            public IntPtr OsVersion;
+            public IntPtr GameVersion;
+            public IntPtr BuildNumber;
+            public IntPtr AppInstallTime;
+            public IntPtr AppUpdateTime;
+            public double BatteryLevel;
+            public double FreeStorageMB;
+            public double MemoryUsageMB;
+            public IntPtr DeviceId;
+            public IntPtr Timezone;
+            public IntPtr ScreenResolution;
+            public IntPtr ConnectionType;
+            public IntPtr LocalIp;
+            public IntPtr ComputerName;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         private struct GrConfigNative
         {
@@ -34,6 +60,9 @@ namespace GameRebellionSdk.Unity.Adapters
         [DllImport(LibraryName, EntryPoint = "gr_initialize", CharSet = CharSet.Ansi)]
         private static extern int gr_initialize(ref GrConfigNative config);
 
+        [DllImport(LibraryName, EntryPoint = "gr_set_device_info")]
+        private static extern int gr_set_device_info(ref GrDeviceInfoNative info);
+
         [DllImport(LibraryName, EntryPoint = "gr_set_debug_logging")]
         private static extern void gr_set_debug_logging(int enabled);
         
@@ -42,6 +71,9 @@ namespace GameRebellionSdk.Unity.Adapters
         
         [DllImport(LibraryName, EntryPoint = "gr_set_consent")]
         private static extern int gr_set_consent(int state);
+
+        [DllImport(LibraryName, EntryPoint = "gr_set_consent_policy")]
+        private static extern int gr_set_consent_policy(int requireConsent);
         
         [DllImport(LibraryName, EntryPoint = "gr_set_paused")]
         private static extern int gr_set_paused(int paused);
@@ -339,6 +371,10 @@ namespace GameRebellionSdk.Unity.Adapters
                     // Older native core without the export; debug logging stays env-driven.
                 }
 
+                // Must precede gr_initialize: the SDK reads host info when it builds
+                // session_start.
+                SendHostDeviceInfo();
+
                 return gr_initialize(ref nativeConfig);
             }
             catch (DllNotFoundException ex)
@@ -361,6 +397,50 @@ namespace GameRebellionSdk.Unity.Adapters
             }
         }
         
+        /// <summary>
+        /// Supplies the one thing the engine knows and the native core cannot work out
+        /// for itself on desktop: the display resolution. Sent as a sparse overlay, so
+        /// everything else still comes from the SDK's own desktop provider (and
+        /// therefore matches what the Unreal SDK reports for the same machine --
+        /// battery included, which the SDK reads per platform).
+        /// </summary>
+        private void SendHostDeviceInfo()
+        {
+            IntPtr screenResolutionPtr = IntPtr.Zero;
+            try
+            {
+                var resolution = Screen.currentResolution;
+                var info = new GrDeviceInfoNative
+                {
+                    BatteryLevel = double.NaN,
+                    FreeStorageMB = double.NaN,
+                    MemoryUsageMB = double.NaN
+                };
+
+                if (resolution.width > 0 && resolution.height > 0)
+                {
+                    screenResolutionPtr = Marshal.StringToHGlobalAnsi(
+                        $"{resolution.width}x{resolution.height}");
+                    info.ScreenResolution = screenResolutionPtr;
+                }
+
+                gr_set_device_info(ref info);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                // Native core predating the export: nothing to push, everything else
+                // still comes from the SDK's own provider.
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[DesktopAdapter] Could not push host device info: {ex.Message}");
+            }
+            finally
+            {
+                if (screenResolutionPtr != IntPtr.Zero) Marshal.FreeHGlobal(screenResolutionPtr);
+            }
+        }
+
         private int GuardNative()
         {
             if (!_nativeAvailable)
@@ -377,10 +457,28 @@ namespace GameRebellionSdk.Unity.Adapters
             return gr_shutdown(endReason ?? "normal");
         }
         
-        public int SetConsent(bool granted)
+        public int SetConsent(int state)
         {
             if (GuardNative() != 0) return -1;
-            return gr_set_consent(granted ? 1 : 0);
+            return gr_set_consent(state);
+        }
+
+        public int SetConsentPolicy(bool requireConsent)
+        {
+            if (GuardNative() != 0) return -1;
+            try
+            {
+                return gr_set_consent_policy(requireConsent ? 1 : 0);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                // Native library predates the export. Report it rather than letting a
+                // caller believe an opt-in build is holding events back.
+                UnityEngine.Debug.LogError(
+                    "[GRC] gr_set_consent_policy missing from the native library -- " +
+                    "RequireConsent has no effect and events WILL transmit without consent.");
+                return -1;
+            }
         }
         
         public int SetPaused(bool paused)
