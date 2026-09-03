@@ -168,18 +168,50 @@ const char* gr_ios_get_build_number() {
     return CopyNSString(g_buildNumber);
 }
 
-const char* gr_ios_get_app_install_time() {
+// iOS has no public API for "when was this app installed". Both timestamps are
+// therefore read off the filesystem, and *which* file matters:
+//
+//   install -> the app container's Documents directory, created when the container
+//              is created at install and kept across every app update. Only a
+//              delete-and-reinstall resets it, which is what install means.
+//   update  -> the bundle, which is replaced wholesale by an update.
+//
+// Both used to read the bundle's NSFileCreationDate. That returned nil on device --
+// app_install_time and app_update_time were missing from every shipped Unity iOS
+// session while Android reported both -- so each read now has a fallback, and the
+// SDK core falls back again to its own recorded first launch if all of them fail.
+static NSDate* GRContainerCreationDate() {
+    NSArray<NSString*>* paths =
+        NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* documents = [paths firstObject];
+    if (documents) {
+        NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:documents
+                                                                              error:nil];
+        NSDate* created = attrs[NSFileCreationDate];
+        if (created) return created;
+    }
+    return nil;
+}
+
+static NSDate* GRBundleDate(NSString* attributeKey) {
     NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
-    NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:bundlePath error:nil];
-    NSDate* created = attrs[NSFileCreationDate];
-    return CopyNSString(FormatDateIso8601(created));
+    if (!bundlePath) return nil;
+    NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:bundlePath
+                                                                          error:nil];
+    return attrs ? attrs[attributeKey] : nil;
+}
+
+const char* gr_ios_get_app_install_time() {
+    NSDate* installed = GRContainerCreationDate();
+    if (!installed) installed = GRBundleDate(NSFileCreationDate);
+    return CopyNSString(FormatDateIso8601(installed));
 }
 
 const char* gr_ios_get_app_update_time() {
-    NSString* bundlePath = [[NSBundle mainBundle] bundlePath];
-    NSDictionary* attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:bundlePath error:nil];
-    NSDate* modified = attrs[NSFileModificationDate];
-    return CopyNSString(FormatDateIso8601(modified));
+    NSDate* updated = GRBundleDate(NSFileModificationDate);
+    if (!updated) updated = GRBundleDate(NSFileCreationDate);
+    if (!updated) updated = GRContainerCreationDate();
+    return CopyNSString(FormatDateIso8601(updated));
 }
 
 const char* gr_ios_get_screen_resolution() {

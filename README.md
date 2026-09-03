@@ -130,7 +130,7 @@ Keep `isDebug` off in release builds.
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `GameVersion` | *(empty)* | Version reported with events. Empty = `Application.version` from Player Settings. |
-| `BuildNumber` | *(empty)* | Build identifier reported with events. Empty = `Application.buildGUID`. |
+| `BuildNumber` | *(empty)* | Build identifier reported with events. Empty = the platform's own build counter (Android `versionCode`, iOS `CFBundleVersion`), or `Application.buildGUID` on desktop. |
 | `Environment` | `Production` | Backend the SDK talks to. Overridable via `Initialize(apiKey, environment)`. |
 | `BatchSizeBytes` | `65536` | Max size of one event batch before sending. Clamped to 1 KB – 1 MB. |
 | `BatchMaxEvents` | `100` | Max events per batch before sending. Clamped to 1 – 1000. |

@@ -18,8 +18,9 @@ namespace GameRebellionSdk.Unity
         [Tooltip("Reported game version. Leave empty to use Application.version (Player Settings > Version).")]
         public string GameVersion = "";
 
-        /// <summary>Reported build number. Leave empty to use Application.buildGUID (falls back to Application.version).</summary>
-        [Tooltip("Reported build number. Leave empty to use Application.buildGUID (falls back to Application.version).")]
+        /// <summary>Reported build number: the store's build counter. Leave empty to use the
+        /// platform's own -- Android versionCode, iOS CFBundleVersion, the build GUID on desktop.</summary>
+        [Tooltip("Reported build number: the store build counter. Leave empty to use the platform's own - Android versionCode, iOS CFBundleVersion, build GUID on desktop.")]
         public string BuildNumber = "";
 
         /// <summary>

@@ -163,7 +163,7 @@ namespace GameRebellionSdk.Unity
         {
             ApiKey = apiKey ?? string.Empty,
             GameVersion = FirstNonEmpty(settings.GameVersion, Application.version),
-            BuildNumber = FirstNonEmpty(settings.BuildNumber, Application.buildGUID, Application.version),
+            BuildNumber = FirstNonEmpty(settings.BuildNumber, PlatformBuildNumber()),
             Environment = settings.Environment,
             BatchSizeBytes = settings.BatchSizeBytes,
             BatchMaxEvents = settings.BatchMaxEvents,
@@ -173,6 +173,31 @@ namespace GameRebellionSdk.Unity
         };
 
         return config;
+    }
+
+    /// <summary>
+    /// build_number is the store's build counter, not an opaque per-build id: Android
+    /// versionCode, iOS CFBundleVersion. It has to mean the same thing in both SDKs to
+    /// be sortable or groupable -- this used to default to Application.buildGUID, so a
+    /// Unity session reported "8c3a4b00d27b4a85bede9175a6d1d8ff" in the column where
+    /// an Unreal session reported "1.0.0", and neither could be compared with the other.
+    ///
+    /// On Android and iOS the answer is left empty on purpose: the SDK's own native
+    /// adapter reads versionCode/CFBundleVersion, and a blank config value is what lets
+    /// that through (see AndroidDeviceInfoProvider/IOSDeviceInfoProvider). Desktop has
+    /// no build counter, so the build GUID stays the fallback there -- it is the only
+    /// thing that separates two builds of the same version -- and the Editor, where
+    /// buildGUID is empty, reports the version.
+    /// </summary>
+    private static string PlatformBuildNumber()
+    {
+        if (Application.platform == RuntimePlatform.Android ||
+            Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            return string.Empty;
+        }
+
+        return FirstNonEmpty(Application.buildGUID, Application.version);
     }
 
     /// <summary>
