@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-section gr-section--fill">
+        <ui:VisualElement class="gr-section__header">
+            <ui:Label text="Live events" class="gr-section__title" />
+            <ui:Label name="events-summary" class="gr-events__summary gr-text--muted gr-text--small" />
+            <ui:Button name="clear-events-button" text="Clear" class="gr-button gr-button--small" />
+        </ui:VisualElement>
+        <ui:Label name="events-empty" text="Enter play mode: every GameRebellion event your game sends shows up here, with the script line that sent it. Events the SDK drops, because Initialize hasn't run or a required field is empty, are marked. Nothing is sent to GameRebellion from the Editor." class="gr-events__empty" />
+        <ui:ListView name="events-list" class="gr-events" />
+        <ui:Label name="events-hint" text="Click an event to open the script that sent it. Each play session starts a new list." class="gr-events__hint gr-text--muted gr-text--small gr-hidden" />
+    </ui:VisualElement>
+</ui:UXML>

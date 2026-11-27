@@ -213,3 +213,44 @@ public static class GameRebellion
         return GameRebellionSdk.Unity.GameRebellion.RecordMemory(memoryMB);
     }
 }
+
+/// <summary>
+/// Automatic in-app purchase reporting.
+///
+/// The global-namespace facade over <see cref="GameRebellionSdk.Unity.GameRebellionIap"/>,
+/// matching how <c>GameRebellion</c> wraps the namespaced SDK entry point.
+/// </summary>
+public static class GameRebellionIap
+{
+    /// <summary>
+    /// True when this build can observe the platform store: the setting is on,
+    /// the platform has an observer, and the OS is new enough to run it.
+    /// </summary>
+    public static bool IsSupported => GameRebellionSdk.Unity.GameRebellionIap.IsSupported;
+
+    /// <summary>
+    /// True once the SDK is reporting purchases by itself.
+    ///
+    /// The check to branch on in a purchase handler: report the purchase yourself
+    /// when this is false, and leave it alone when it is true. That stays correct
+    /// on platforms with no observer, on an OS too old to run one, and when a
+    /// developer switches auto-tracking off -- without the game testing for
+    /// platforms or SDK versions.
+    /// </summary>
+    public static bool IsObserving => GameRebellionSdk.Unity.GameRebellionIap.IsObserving;
+
+    /// <summary>
+    /// Starts observing the store. Idempotent, and called automatically after a
+    /// successful Initialize -- only needed if you stopped observation yourself.
+    /// </summary>
+    public static void StartObservingTransactions()
+    {
+        GameRebellionSdk.Unity.GameRebellionIap.StartObservingTransactions();
+    }
+
+    /// <summary>Stops observing. Your own store code is untouched.</summary>
+    public static void StopObservingTransactions()
+    {
+        GameRebellionSdk.Unity.GameRebellionIap.StopObservingTransactions();
+    }
+}

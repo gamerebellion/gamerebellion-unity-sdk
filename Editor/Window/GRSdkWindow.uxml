@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Style src="Styles/GRTokens.uss" />
+    <ui:Style src="Styles/GRSdkWindow.uss" />
+    <!-- Each empty slot is filled by GRSdkWindow.Build() with the UXML file of the same part. -->
+    <ui:VisualElement name="root" class="gr-root">
+        <ui:VisualElement name="signin-view" class="gr-fill" />
+        <ui:VisualElement name="main-view" class="gr-fill gr-hidden">
+            <ui:VisualElement class="gr-header">
+                <ui:VisualElement class="gr-logo gr-logo--small" />
+                <ui:Label text="GameRebellion" class="gr-header__title" />
+                <ui:Label name="mock-badge" text="Mock games" tooltip="Sign-in is real. The games, API keys and sample events are mock data until the games API is ready." class="gr-badge gr-badge--mock" />
+                <ui:VisualElement class="gr-header__spacer" />
+                <ui:Label name="user-email" class="gr-header__user" />
+                <ui:Button name="sign-out-button" text="Sign out" class="gr-button gr-button--small" />
+            </ui:VisualElement>
+            <ui:VisualElement class="gr-tabs">
+                <ui:Button name="tab-game" text="Game" class="gr-tabs__tab" />
+                <ui:Button name="tab-mcp" text="MCP" class="gr-tabs__tab" />
+                <ui:Button name="tab-live-events" text="Live events" class="gr-tabs__tab" />
+            </ui:VisualElement>
+            <ui:ScrollView name="page-game" class="gr-page">
+                <ui:VisualElement name="games-section" />
+                <ui:VisualElement name="integration-section" />
+                <ui:VisualElement name="game-settings-section" />
+            </ui:ScrollView>
+            <ui:ScrollView name="page-mcp" class="gr-page gr-hidden">
+                <ui:VisualElement name="mcp-section" />
+            </ui:ScrollView>
+            <ui:VisualElement name="page-live-events" class="gr-page gr-hidden">
+                <ui:VisualElement name="live-events-section" class="gr-fill" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

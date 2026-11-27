@@ -1,0 +1,666 @@
+/* Layout and components of the GameRebellion window.
+   Every class is gr- prefixed and follows BEM (block__element--modifier).
+   Values come from GRTokens.uss and the theme sheets only. */
+
+.gr-root {
+    flex-grow: 1;
+    background-color: var(--gr-color-surface);
+    color: var(--gr-color-text);
+    font-size: var(--gr-font-size-body);
+}
+
+.gr-hidden {
+    display: none;
+}
+
+.gr-fill {
+    flex-grow: 1;
+}
+
+/* Logo: the brand tile, scaled from the 400 px source. */
+
+.gr-logo {
+    flex-shrink: 0;
+    background-image: url("../Images/GRLogo.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.gr-logo--small {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--gr-space-2);
+    border-radius: 5px;
+}
+
+.gr-logo--large {
+    width: 88px;
+    height: 88px;
+    margin-bottom: var(--gr-space-4);
+    border-radius: 20px;
+}
+
+/* Sign-in screen */
+
+.gr-signin {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.gr-signin__card {
+    align-items: center;
+    max-width: 340px;
+}
+
+.gr-signin__title {
+    margin-bottom: 6px;
+    font-size: var(--gr-font-size-hero);
+    -unity-font-style: bold;
+}
+
+.gr-signin__subtitle {
+    margin-bottom: 20px;
+    color: var(--gr-color-text-muted);
+    white-space: normal;
+    -unity-text-align: upper-center;
+}
+
+.gr-signin__actions {
+    align-items: center;
+}
+
+.gr-signin__hint {
+    margin-bottom: var(--gr-space-2);
+}
+
+.gr-signin__message {
+    -unity-text-align: upper-center;
+}
+
+.gr-signin__note {
+    margin-top: 24px;
+}
+
+.gr-games__studio {
+    margin-bottom: var(--gr-space-1);
+    -unity-font-style: bold;
+}
+
+/* Header */
+
+.gr-header {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    padding-top: var(--gr-space-2);
+    padding-bottom: var(--gr-space-2);
+    padding-left: var(--gr-space-3);
+    padding-right: var(--gr-space-3);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--gr-color-border);
+}
+
+.gr-header__title {
+    margin-right: var(--gr-space-2);
+    font-size: var(--gr-font-size-title);
+    -unity-font-style: bold;
+}
+
+.gr-header__spacer {
+    flex-grow: 1;
+}
+
+.gr-header__user {
+    margin-right: var(--gr-space-1);
+    color: var(--gr-color-text-muted);
+    font-size: var(--gr-font-size-small);
+}
+
+/* Tabs: Game, MCP, Live events */
+
+.gr-tabs {
+    flex-direction: row;
+    flex-shrink: 0;
+    padding-left: var(--gr-space-3);
+    padding-right: var(--gr-space-3);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--gr-color-border);
+}
+
+.unity-button.gr-tabs__tab {
+    height: auto;
+    margin-left: 0;
+    margin-right: var(--gr-space-4);
+    margin-top: 0;
+    margin-bottom: -1px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-width: 0;
+    border-bottom-width: 2px;
+    border-radius: 0;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--gr-color-text-muted);
+}
+
+.unity-button.gr-tabs__tab:hover,
+.unity-button.gr-tabs__tab:active {
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--gr-color-text);
+}
+
+.unity-button.gr-tabs__tab--selected {
+    border-bottom-color: var(--gr-color-accent);
+    color: var(--gr-color-text);
+    -unity-font-style: bold;
+}
+
+.gr-badge {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: var(--gr-radius);
+    font-size: var(--gr-font-size-small);
+}
+
+.gr-badge--mock {
+    background-color: var(--gr-color-warn-soft);
+    color: var(--gr-color-warn);
+}
+
+.gr-page {
+    flex-grow: 1;
+}
+
+.gr-page .unity-scroll-view__content-container {
+    padding-bottom: var(--gr-space-3);
+}
+
+/* Sections */
+
+.gr-section {
+    margin-top: var(--gr-space-2);
+    margin-left: var(--gr-space-3);
+    margin-right: var(--gr-space-3);
+    padding-top: var(--gr-space-2);
+    padding-bottom: var(--gr-space-3);
+    padding-left: var(--gr-space-3);
+    padding-right: var(--gr-space-3);
+    background-color: var(--gr-color-surface-raised);
+    border-width: 1px;
+    border-color: var(--gr-color-border);
+    border-radius: 4px;
+}
+
+.gr-section--fill {
+    flex-grow: 1;
+    margin-bottom: var(--gr-space-3);
+}
+
+.gr-section__header {
+    flex-direction: row;
+    align-items: center;
+    min-height: 22px;
+    margin-bottom: var(--gr-space-1);
+}
+
+.gr-section__title {
+    flex-grow: 1;
+    font-size: var(--gr-font-size-title);
+    -unity-font-style: bold;
+}
+
+.gr-subsection {
+    margin-top: var(--gr-space-3);
+    padding-top: var(--gr-space-2);
+    border-top-width: 1px;
+    border-top-color: var(--gr-color-border);
+}
+
+.gr-subsection__title {
+    margin-bottom: var(--gr-space-1);
+    -unity-font-style: bold;
+}
+
+.gr-row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: var(--gr-space-2);
+}
+
+/* Text */
+
+.gr-text--muted {
+    color: var(--gr-color-text-muted);
+}
+
+.gr-text--small {
+    font-size: var(--gr-font-size-small);
+}
+
+.gr-text--wrap {
+    white-space: normal;
+}
+
+.gr-message {
+    margin-top: var(--gr-space-2);
+    padding: 6px 8px;
+    border-radius: var(--gr-radius);
+    background-color: var(--gr-color-surface-sunken);
+    white-space: normal;
+}
+
+.gr-message--ok {
+    background-color: var(--gr-color-ok-soft);
+    color: var(--gr-color-ok);
+}
+
+.gr-message--warn {
+    background-color: var(--gr-color-warn-soft);
+    color: var(--gr-color-warn);
+}
+
+.gr-message--error {
+    background-color: var(--gr-color-error-soft);
+    color: var(--gr-color-error);
+}
+
+/* Fields */
+
+.gr-field {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.gr-field .unity-base-field__label,
+.gr-field-label {
+    min-width: 90px;
+    width: 90px;
+    color: var(--gr-color-text-muted);
+}
+
+/* Buttons */
+
+.gr-button {
+    height: 22px;
+    margin-left: 0;
+    margin-right: var(--gr-space-1);
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: var(--gr-space-3);
+    padding-right: var(--gr-space-3);
+    border-radius: var(--gr-radius);
+}
+
+.unity-button.gr-button--primary {
+    background-color: var(--gr-color-accent);
+    border-color: var(--gr-color-accent);
+    color: var(--gr-color-on-accent);
+}
+
+.unity-button.gr-button--primary:hover {
+    background-color: var(--gr-color-accent-hover);
+}
+
+.unity-button.gr-button--primary:active {
+    background-color: var(--gr-color-accent);
+}
+
+.gr-button--large {
+    height: 32px;
+    min-width: 240px;
+    padding-left: var(--gr-space-4);
+    padding-right: var(--gr-space-4);
+    border-radius: 4px;
+    font-size: var(--gr-font-size-title);
+    -unity-font-style: bold;
+}
+
+.gr-button--small {
+    height: 18px;
+    margin-left: var(--gr-space-1);
+    margin-right: 0;
+    padding-left: var(--gr-space-2);
+    padding-right: var(--gr-space-2);
+    font-size: var(--gr-font-size-small);
+}
+
+/* Games */
+
+.gr-games {
+    margin-top: var(--gr-space-1);
+}
+
+/* The list shows five games and scrolls the rest (GRGamesSection sets its height).
+   Undo the page's bottom padding, which reaches this nested scroll view too. */
+.gr-games .unity-scroll-view__content-container {
+    padding-bottom: 0;
+}
+
+.gr-games .unity-scroll-view__horizontal-scroller {
+    display: none;
+}
+
+/* A scroll view squeezes its items to fit it; rows keep their own height and scroll. */
+.gr-games__item {
+    flex-shrink: 0;
+}
+
+.gr-game-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: var(--gr-space-2);
+    padding-bottom: var(--gr-space-2);
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: var(--gr-color-surface);
+    border-width: 1px;
+    border-color: var(--gr-color-border);
+    border-radius: 4px;
+}
+
+.gr-game-row:hover {
+    border-color: var(--gr-color-text-muted);
+}
+
+.gr-game-row--selected,
+.gr-game-row--selected:hover {
+    background-color: var(--gr-color-accent-soft);
+    border-color: var(--gr-color-accent);
+}
+
+.gr-game-row__radio {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: var(--gr-color-text-muted);
+}
+
+.gr-game-row--selected .gr-game-row__radio {
+    background-color: var(--gr-color-accent);
+    border-color: var(--gr-color-accent);
+}
+
+.gr-game-row__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.gr-game-row__name {
+    -unity-font-style: bold;
+}
+
+.gr-game-row__meta {
+    color: var(--gr-color-text-muted);
+    font-size: var(--gr-font-size-small);
+}
+
+.gr-game-row__badge {
+    display: none;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: var(--gr-radius);
+    background-color: var(--gr-color-accent);
+    color: var(--gr-color-on-accent);
+    font-size: var(--gr-font-size-small);
+}
+
+.gr-game-row--selected .gr-game-row__badge {
+    display: flex;
+}
+
+/* Disabled by the studio's plan: no SDK key, can't be newly connected. A project
+   already connected to it stays connected and shows "Disabled" instead of "Connected". */
+
+.gr-game-row--selected .gr-game-row__badge--disabled,
+.gr-game-row--disabled .gr-game-row__badge {
+    display: none;
+}
+
+.gr-game-row--disabled,
+.gr-game-row--disabled:hover {
+    background-color: var(--gr-color-surface-sunken);
+    border-color: var(--gr-color-border);
+}
+
+.gr-game-row--disabled .gr-game-row__radio {
+    opacity: 0.4;
+}
+
+.gr-game-row--disabled .gr-game-row__name {
+    color: var(--gr-color-text-muted);
+}
+
+.gr-game-row__badge--disabled {
+    background-color: var(--gr-color-warn-soft);
+    color: var(--gr-color-warn);
+}
+
+.gr-game-row--disabled .gr-game-row__badge--disabled {
+    display: flex;
+}
+
+/* API key */
+
+.gr-key__value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.gr-key__note {
+    margin-top: var(--gr-space-1);
+}
+
+/* MCP servers */
+
+.gr-servers {
+    margin-top: var(--gr-space-2);
+}
+
+.gr-ai-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--gr-space-2);
+}
+
+.gr-ai-row__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.gr-ai-row__name {
+    -unity-font-style: bold;
+}
+
+.gr-ai-row__detail {
+    color: var(--gr-color-text-muted);
+    white-space: normal;
+}
+
+.gr-ai-row__button {
+    flex-shrink: 0;
+    margin-left: var(--gr-space-2);
+}
+
+.gr-servers__other {
+    margin-right: var(--gr-space-2);
+}
+
+.gr-servers__note {
+    margin-top: var(--gr-space-2);
+}
+
+.gr-status-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-right: var(--gr-space-2);
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: var(--gr-color-text-muted);
+}
+
+.gr-status-dot--ok {
+    background-color: var(--gr-color-ok);
+    border-color: var(--gr-color-ok);
+}
+
+.gr-status-dot--warn {
+    background-color: var(--gr-color-warn);
+    border-color: var(--gr-color-warn);
+}
+
+.gr-status-dot--error {
+    background-color: var(--gr-color-error);
+    border-color: var(--gr-color-error);
+}
+
+/* Integration checklist */
+
+.gr-checklist-item {
+    flex-direction: row;
+    align-items: flex-start;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.gr-checklist-item__icon {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    margin-top: 4px;
+    margin-right: var(--gr-space-2);
+    border-width: 1px;
+    border-radius: 5px;
+    border-color: var(--gr-color-text-muted);
+}
+
+.gr-checklist-item--done .gr-checklist-item__icon {
+    background-color: var(--gr-color-ok);
+    border-color: var(--gr-color-ok);
+}
+
+.gr-checklist-item--partial .gr-checklist-item__icon {
+    background-color: var(--gr-color-warn);
+    border-color: var(--gr-color-warn);
+}
+
+.gr-checklist-item__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.gr-checklist-item__detail {
+    color: var(--gr-color-text-muted);
+    font-size: var(--gr-font-size-small);
+    white-space: normal;
+}
+
+/* Live events */
+
+.gr-events {
+    height: 160px;
+    background-color: var(--gr-color-surface-sunken);
+    border-width: 1px;
+    border-color: var(--gr-color-border);
+    border-radius: var(--gr-radius);
+}
+
+.gr-section--fill .gr-events {
+    flex-grow: 1;
+    height: auto;
+    min-height: 120px;
+}
+
+.gr-events__empty {
+    padding-bottom: var(--gr-space-2);
+    color: var(--gr-color-text-muted);
+    white-space: normal;
+}
+
+.gr-event-row {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    padding-left: var(--gr-space-1);
+    padding-right: var(--gr-space-1);
+}
+
+.gr-event-row__time {
+    width: 60px;
+    flex-shrink: 0;
+    color: var(--gr-color-text-muted);
+    font-size: var(--gr-font-size-small);
+}
+
+.gr-event-row__name {
+    width: 100px;
+    flex-shrink: 0;
+    -unity-font-style: bold;
+}
+
+.gr-event-row__payload {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--gr-color-text-muted);
+}
+
+.gr-event-row__site {
+    flex-shrink: 0;
+    color: var(--gr-color-text-muted);
+    font-size: var(--gr-font-size-small);
+    -unity-text-align: middle-right;
+}
+
+.gr-event-row--invalid .gr-event-row__name,
+.gr-event-row--invalid .gr-event-row__payload {
+    color: var(--gr-color-error);
+}
+
+.gr-event-row:hover {
+    background-color: var(--gr-color-surface);
+}
+
+.gr-events__summary {
+    flex-grow: 1;
+    margin-left: var(--gr-space-2);
+}
+
+.gr-events__hint {
+    margin-top: var(--gr-space-1);
+}
+
+/* Narrow windows: USS has no media queries, so GRSdkWindow toggles gr-root--narrow. */
+
+.gr-root--narrow .gr-section {
+    margin-left: var(--gr-space-1);
+    margin-right: var(--gr-space-1);
+}
+
+.gr-root--narrow .gr-event-row__payload,
+.gr-root--narrow .gr-header__user {
+    display: none;
+}
+
+.gr-root--narrow .gr-field .unity-base-field__label,
+.gr-root--narrow .gr-field-label {
+    min-width: 70px;
+    width: 70px;
+}

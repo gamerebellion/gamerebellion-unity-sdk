@@ -60,6 +60,9 @@ namespace GameRebellionSdk.Unity.Adapters
         [DllImport(LibraryName, EntryPoint = "gr_initialize", CharSet = CharSet.Ansi)]
         private static extern int gr_initialize(ref GrConfigNative config);
 
+        [DllImport(LibraryName, EntryPoint = "gr_set_session_resume_grace")]
+        private static extern int gr_set_session_resume_grace(int seconds);
+
         [DllImport(LibraryName, EntryPoint = "gr_set_device_info")]
         private static extern int gr_set_device_info(ref GrDeviceInfoNative info);
 
@@ -223,6 +226,26 @@ namespace GameRebellionSdk.Unity.Adapters
             [MarshalAs(UnmanagedType.LPStr)] string status,
             [MarshalAs(UnmanagedType.LPStr)] string failureReason);
 
+        // The additive v2 export. gr_track_transaction above is left declared and
+        // unused rather than removed: the symbol still exists in every shipped
+        // native library, and keeping the declaration next to its replacement is
+        // what makes the pairing obvious to the next person to touch this.
+        [DllImport(LibraryName, EntryPoint = "gr_track_transaction_v2", CharSet = CharSet.Ansi)]
+        private static extern int gr_track_transaction_v2(
+            double amount,
+            [MarshalAs(UnmanagedType.LPStr)] string currency,
+            [MarshalAs(UnmanagedType.LPStr)] string type,
+            [MarshalAs(UnmanagedType.LPStr)] string description,
+            [MarshalAs(UnmanagedType.LPStr)] string transactionHash,
+            double usdValue,
+            [MarshalAs(UnmanagedType.LPStr)] string platformFee,
+            [MarshalAs(UnmanagedType.LPStr)] string status,
+            [MarshalAs(UnmanagedType.LPStr)] string failureReason,
+            [MarshalAs(UnmanagedType.LPStr)] string productId,
+            [MarshalAs(UnmanagedType.LPStr)] string transactionId,
+            int isSandbox,
+            [MarshalAs(UnmanagedType.LPStr)] string occurredAt);
+
         [DllImport(LibraryName, EntryPoint = "gr_track_crypto_transaction", CharSet = CharSet.Ansi)]
         private static extern int gr_track_crypto_transaction(
             [MarshalAs(UnmanagedType.LPStr)] string amount,
@@ -375,7 +398,25 @@ namespace GameRebellionSdk.Unity.Adapters
                 // session_start.
                 SendHostDeviceInfo();
 
-                return gr_initialize(ref nativeConfig);
+                var initResult = gr_initialize(ref nativeConfig);
+
+                // After init, and tolerated when missing. The GrConfig struct layout
+                // is frozen, so the grace period travels as its own export -- and a
+                // native core built before that export existed must keep working
+                // rather than fail initialization over a session-timing setting.
+                if (initResult == 0)
+                {
+                    try
+                    {
+                        gr_set_session_resume_grace(config.SessionResumeGraceSeconds);
+                    }
+                    catch (EntryPointNotFoundException)
+                    {
+                        // Older native core: sessions end on background, as before.
+                    }
+                }
+
+                return initResult;
             }
             catch (DllNotFoundException ex)
             {
@@ -707,7 +748,7 @@ namespace GameRebellionSdk.Unity.Adapters
             if (evt == null || string.IsNullOrEmpty(evt.Currency))
                 return -2;
 
-            return gr_track_transaction(
+            return gr_track_transaction_v2(
                 evt.Amount,
                 evt.Currency,
                 evt.Type,
@@ -716,7 +757,17 @@ namespace GameRebellionSdk.Unity.Adapters
                 evt.UsdValue ?? double.NaN,
                 evt.PlatformFee,
                 evt.Status,
-                evt.FailureReason);
+                evt.FailureReason,
+                evt.ProductId,
+                evt.TransactionId,
+                TriState(evt.IsSandbox),
+                evt.OccurredAt);
+        }
+
+        /// <summary>Nullable bool over the C ABI: -1 unset, 0 false, 1 true.</summary>
+        private static int TriState(bool? value)
+        {
+            return value.HasValue ? (value.Value ? 1 : 0) : -1;
         }
 
         public int TrackCryptoTransaction(GrCryptoTransactionEvent evt)

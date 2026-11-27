@@ -1,0 +1,19 @@
+/* Colours for the light editor skin. GRThemeDark.uss defines the same names. */
+.gr-root {
+    --gr-color-text: #1C1C1C;
+    --gr-color-text-muted: #555555;
+    --gr-color-surface: #C8C8C8;
+    --gr-color-surface-raised: #D6D6D6;
+    --gr-color-surface-sunken: #BEBEBE;
+    --gr-color-border: #999999;
+    --gr-color-accent: #DF07B9;
+    --gr-color-accent-hover: #C8069F;
+    --gr-color-accent-soft: rgba(223, 7, 185, 0.12);
+    --gr-color-on-accent: #FFFFFF;
+    --gr-color-ok: #2E7D32;
+    --gr-color-ok-soft: rgba(46, 125, 50, 0.15);
+    --gr-color-warn: #8A5700;
+    --gr-color-warn-soft: rgba(154, 98, 0, 0.15);
+    --gr-color-error: #B3261E;
+    --gr-color-error-soft: rgba(179, 38, 30, 0.12);
+}

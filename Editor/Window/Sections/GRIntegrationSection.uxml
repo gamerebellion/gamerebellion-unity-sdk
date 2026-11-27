@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-section">
+        <ui:VisualElement class="gr-section__header">
+            <ui:Label text="Integration" class="gr-section__title" />
+            <ui:Button name="refresh-integration-button" text="Refresh" class="gr-button gr-button--small" />
+        </ui:VisualElement>
+        <ui:VisualElement name="checklist" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameVersion: 
   BuildNumber: 
-  Environment: 0
+  Environment: 2
   BatchSizeBytes: 65536
   BatchMaxEvents: 100
   FlushIntervalMs: 30000
   IsDebug: 0
+  RequireConsent: 0
+  SessionResumeGraceSeconds: 30
+  AutoTrackPurchases: 0

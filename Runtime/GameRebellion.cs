@@ -24,6 +24,8 @@ namespace GameRebellionSdk.Unity
         public bool IsDebug { get; set; } = false;
         /// <summary>Opt-in consent policy; see GameRebellionSettings.RequireConsent.</summary>
         public bool RequireConsent { get; set; } = false;
+        /// <summary>Background grace period before a session ends; see GameRebellionSettings.</summary>
+        public int SessionResumeGraceSeconds { get; set; } = 30;
     }
 
     /// <summary>
@@ -135,6 +137,7 @@ namespace GameRebellionSdk.Unity
                 Debug.Log("[GRC] Running in Unity Editor mode - SDK will not send data to server");
 #endif
                 EnsureMetricsCollector();
+                GameRebellionIap.AutoStart();
                 DrainAndLogSDKLogs();
                 return true;
             }
@@ -169,7 +172,8 @@ namespace GameRebellionSdk.Unity
             BatchMaxEvents = settings.BatchMaxEvents,
             FlushIntervalMs = settings.FlushIntervalMs,
             IsDebug = settings.IsDebug,
-            RequireConsent = settings.RequireConsent
+            RequireConsent = settings.RequireConsent,
+            SessionResumeGraceSeconds = settings.SessionResumeGraceSeconds
         };
 
         return config;
@@ -304,10 +308,12 @@ namespace GameRebellionSdk.Unity
 
     public static bool TrackLevelCompleted(int level, int score, string difficulty, string email)
     {
+        // The capture says whether an email was passed, never the address.
+        var described = $"level_id={level}  score={score}  difficulty={difficulty ?? "normal"}  email={(string.IsNullOrEmpty(email) ? "none" : "set")}";
         if (!_isInitialized)
         {
             Debug.LogError("[GRC] SDK not initialized. Call Initialize() first.");
-            return false;
+            return Dropped("level_completed", described, null);
         }
 
         Debug.Log($"[GRC] TrackLevelCompleted: level={level}, score={score}, difficulty={difficulty}");
@@ -317,6 +323,7 @@ namespace GameRebellionSdk.Unity
         
         var adapter = GetAdapter();
         int rc = adapter.TrackJson("level_completed", jsonPayload);
+        Sent("level_completed", described, rc);
         
         if (rc == 0)
         {
@@ -345,13 +352,14 @@ namespace GameRebellionSdk.Unity
         if (!_isInitialized)
         {
             Debug.LogError("[GRC] SDK not initialized. Call Initialize() first.");
-            return false;
+            return Dropped(eventName, jsonPayload, null);
         }
 
         Debug.Log($"[GRC] TrackEvent: {eventName}");
 
         var adapter = GetAdapter();
         int rc = adapter.TrackJson(eventName, jsonPayload);
+        Sent(eventName, jsonPayload, rc);
         
         if (rc == 0)
         {
@@ -369,17 +377,18 @@ namespace GameRebellionSdk.Unity
         if (!_isInitialized)
         {
             Debug.LogError("[GRC] SDK not initialized. Call Initialize() first.");
-            return false;
+            return Dropped("log", log, null);
         }
 
         if (log == null || string.IsNullOrEmpty(log.Type))
         {
             Debug.LogError("[GRC] TrackLog requires a non-empty Type");
-            return false;
+            return Dropped("log", log, "Type is required");
         }
 
         var adapter = GetAdapter();
         int rc = adapter.TrackLog(log);
+        Sent("log", log, rc);
         if (rc == 0)
         {
             return true;
@@ -392,137 +401,137 @@ namespace GameRebellionSdk.Unity
     public static bool TrackFeatureUse(GrFeatureUseEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Type))
-            return false;
+            return Dropped("feature_use", evt, "Type is required");
 
-        return GetAdapter().TrackFeatureUse(evt) == 0;
+        return Sent("feature_use", evt, GetAdapter().TrackFeatureUse(evt));
     }
 
     public static bool TrackProgression(GrProgressionEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Type) || string.IsNullOrEmpty(evt.Status))
-            return false;
+            return Dropped("progression", evt, "Type and Status are required");
 
-        return GetAdapter().TrackProgression(evt) == 0;
+        return Sent("progression", evt, GetAdapter().TrackProgression(evt));
     }
 
     public static bool TrackLevelUp(GrLevelUpEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("level_up", evt, null);
 
-        return GetAdapter().TrackLevelUp(evt) == 0;
+        return Sent("level_up", evt, GetAdapter().TrackLevelUp(evt));
     }
 
     public static bool TrackAchievement(GrAchievementEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Id))
-            return false;
+            return Dropped("achievement", evt, "Id is required");
 
-        return GetAdapter().TrackAchievement(evt) == 0;
+        return Sent("achievement", evt, GetAdapter().TrackAchievement(evt));
     }
 
     public static bool TrackFriendInvite(GrFriendInviteEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("friend_invite", evt, null);
 
-        return GetAdapter().TrackFriendInvite(evt) == 0;
+        return Sent("friend_invite", evt, GetAdapter().TrackFriendInvite(evt));
     }
 
     public static bool TrackGroupJoin(GrGroupJoinEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("group_join", evt, null);
 
-        return GetAdapter().TrackGroupJoin(evt) == 0;
+        return Sent("group_join", evt, GetAdapter().TrackGroupJoin(evt));
     }
 
     public static bool TrackChatMessage(GrChatMessageEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("chat_message", evt, null);
 
-        return GetAdapter().TrackChatMessage(evt) == 0;
+        return Sent("chat_message", evt, GetAdapter().TrackChatMessage(evt));
     }
 
     public static bool TrackVoiceCallStart(GrVoiceCallStartEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Type))
-            return false;
+            return Dropped("voice_call_start", evt, "Type is required");
 
-        return GetAdapter().TrackVoiceCallStart(evt) == 0;
+        return Sent("voice_call_start", evt, GetAdapter().TrackVoiceCallStart(evt));
     }
 
     public static bool TrackVoiceCallStop(GrVoiceCallStopEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("voice_call_stop", evt, null);
 
-        return GetAdapter().TrackVoiceCallStop(evt) == 0;
+        return Sent("voice_call_stop", evt, GetAdapter().TrackVoiceCallStop(evt));
     }
 
     public static bool TrackLogin(GrLoginEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.ExternalUserId))
-            return false;
+            return Dropped("login", evt, "ExternalUserId is required");
 
-        return GetAdapter().TrackLogin(evt) == 0;
+        return Sent("login", evt, GetAdapter().TrackLogin(evt));
     }
 
     public static bool TrackLogout(GrLogoutEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("logout", evt, null);
 
-        return GetAdapter().TrackLogout(evt) == 0;
+        return Sent("logout", evt, GetAdapter().TrackLogout(evt));
     }
 
     public static bool TrackTransaction(GrTransactionEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Currency))
-            return false;
+            return Dropped("transaction", evt, "Currency is required");
 
-        return GetAdapter().TrackTransaction(evt) == 0;
+        return Sent("transaction", evt, GetAdapter().TrackTransaction(evt));
     }
 
     public static bool TrackCryptoTransaction(GrCryptoTransactionEvent evt)
     {
         if (!EnsureInitialized() || evt == null || string.IsNullOrEmpty(evt.Amount) || string.IsNullOrEmpty(evt.Currency))
-            return false;
+            return Dropped("crypto_transaction", evt, "Amount and Currency are required");
 
-        return GetAdapter().TrackCryptoTransaction(evt) == 0;
+        return Sent("crypto_transaction", evt, GetAdapter().TrackCryptoTransaction(evt));
     }
 
     public static bool TrackAdView(GrAdViewEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("ad_view", evt, null);
 
-        return GetAdapter().TrackAdView(evt) == 0;
+        return Sent("ad_view", evt, GetAdapter().TrackAdView(evt));
     }
 
     public static bool TrackAdClick(GrAdClickEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("ad_click", evt, null);
 
-        return GetAdapter().TrackAdClick(evt) == 0;
+        return Sent("ad_click", evt, GetAdapter().TrackAdClick(evt));
     }
 
     public static bool TrackAdError(GrAdErrorEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("ad_error", evt, null);
 
-        return GetAdapter().TrackAdError(evt) == 0;
+        return Sent("ad_error", evt, GetAdapter().TrackAdError(evt));
     }
 
     public static bool TrackAdReward(GrAdRewardEvent evt)
     {
         if (!EnsureInitialized() || evt == null)
-            return false;
+            return Dropped("ad_reward", evt, null);
 
-        return GetAdapter().TrackAdReward(evt) == 0;
+        return Sent("ad_reward", evt, GetAdapter().TrackAdReward(evt));
     }
 
     public static void DrainAndLogSDKLogs()
@@ -553,6 +562,28 @@ namespace GameRebellionSdk.Unity
         var adapter = GetAdapter();
         int result = adapter.RecordMemory(memoryMB);
         return result == 0;
+    }
+
+    // In the Editor, every Track call is recorded for the GameRebellion window's Live
+    // events tab, including the ones dropped here (GrEditorEventCapture). In a build
+    // these only return the result.
+    private static bool Sent(string name, object? payload, int rc)
+    {
+#if UNITY_EDITOR
+        GrEditorEventCapture.Record(name, payload, rc == 0 ? null : $"The SDK rejected it (code {rc}).");
+#endif
+        return rc == 0;
+    }
+
+    private static bool Dropped(string name, object? payload, string? rule)
+    {
+#if UNITY_EDITOR
+        GrEditorEventCapture.Record(name, payload,
+            !_isInitialized ? "Dropped: GameRebellion.Initialize hasn't run yet."
+            : payload == null ? "Dropped: the event is null."
+            : $"Dropped: {rule ?? "it isn't valid"}.");
+#endif
+        return false;
     }
 
     private static bool EnsureInitialized()

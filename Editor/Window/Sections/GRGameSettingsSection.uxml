@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-section">
+        <ui:VisualElement class="gr-section__header">
+            <ui:Label text="Game settings" class="gr-section__title" />
+        </ui:VisualElement>
+        <ui:Label name="settings-hint" text="Connect a game above to see its settings." class="gr-text--muted gr-text--wrap" />
+        <ui:VisualElement name="settings-body">
+            <ui:Toggle name="debug-toggle" label="Debug logs" class="gr-field" />
+            <ui:VisualElement name="token-field-host" class="gr-hidden" />
+            <ui:VisualElement class="gr-row">
+                <ui:Label text="API key" class="gr-field-label" />
+                <ui:Label name="api-key-value" class="gr-key__value" />
+                <ui:Button name="reveal-key-button" text="Show" class="gr-button gr-button--small" />
+                <ui:Button name="copy-key-button" text="Copy" class="gr-button gr-button--small" />
+            </ui:VisualElement>
+            <ui:Label name="key-environment-note" class="gr-key__note gr-text--muted gr-text--small gr-text--wrap gr-hidden" />
+            <ui:Label name="key-notice" class="gr-message gr-hidden" />
+            <ui:VisualElement class="gr-row">
+                <ui:Button name="apply-button" text="Apply to project" class="gr-button gr-button--primary" />
+            </ui:VisualElement>
+            <ui:Label name="settings-message" class="gr-message gr-hidden" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

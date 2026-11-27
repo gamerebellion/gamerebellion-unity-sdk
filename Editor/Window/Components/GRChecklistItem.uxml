@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="item" class="gr-checklist-item">
+        <ui:VisualElement class="gr-checklist-item__icon" />
+        <ui:VisualElement class="gr-checklist-item__text">
+            <ui:Label name="label" class="gr-checklist-item__label" />
+            <ui:Label name="detail" class="gr-checklist-item__detail" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

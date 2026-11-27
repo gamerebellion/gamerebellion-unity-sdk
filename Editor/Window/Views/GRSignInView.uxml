@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-signin">
+        <ui:VisualElement class="gr-signin__card">
+            <ui:VisualElement class="gr-logo gr-logo--large" />
+            <ui:Label text="GameRebellion" class="gr-signin__title" />
+            <ui:Label text="Sign in to connect this project to your game, follow its integration and set up your AI agent." class="gr-signin__subtitle" />
+            <ui:VisualElement name="signin-idle" class="gr-signin__actions">
+                <ui:Button name="sign-in-button" text="Sign in with GameRebellion" class="gr-button gr-button--primary gr-button--large" />            </ui:VisualElement>
+            <ui:VisualElement name="signin-busy" class="gr-signin__actions gr-hidden">
+                <ui:Label name="signing-in-hint" text="Finish in your browser: sign in, pick your studio and click Authorize." class="gr-signin__hint" />
+                <ui:Button name="cancel-sign-in-button" text="Cancel" class="gr-button" />
+            </ui:VisualElement>
+            <ui:Label name="signin-message" class="gr-message gr-signin__message gr-hidden" />
+            <ui:Label name="signin-storage-notice" class="gr-message gr-signin__message gr-hidden" />
+        </ui:VisualElement>
+        <ui:Label text="Mock sign-in: a test account, and no browser opens." class="gr-badge gr-badge--mock gr-signin__note gr-mock-auth-only" />
+    </ui:VisualElement>
+</ui:UXML>

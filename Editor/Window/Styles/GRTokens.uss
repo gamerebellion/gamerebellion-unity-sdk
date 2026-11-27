@@ -1,0 +1,13 @@
+/* Spacing and type scale shared by every GameRebellion editor surface.
+   Colours live in the theme sheets; component rules use only var(--gr-*). */
+.gr-root {
+    --gr-space-1: 4px;
+    --gr-space-2: 8px;
+    --gr-space-3: 12px;
+    --gr-space-4: 16px;
+    --gr-radius: 3px;
+    --gr-font-size-small: 11px;
+    --gr-font-size-body: 12px;
+    --gr-font-size-title: 13px;
+    --gr-font-size-hero: 18px;
+}

@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-section">
+        <ui:VisualElement class="gr-section__header">
+            <ui:Label text="Games" class="gr-section__title" />
+            <ui:Label name="games-loading" text="Loading…" class="gr-text--muted gr-text--small gr-hidden" />
+        </ui:VisualElement>
+        <ui:VisualElement name="studio-field-host" class="gr-hidden" />
+        <ui:Label name="games-studio" class="gr-games__studio gr-hidden" />
+        <ui:Label name="games-hint" text="Pick the game this Unity project belongs to." class="gr-text--muted gr-text--wrap" />
+        <ui:ScrollView name="games-list" class="gr-games" />
+        <ui:Label name="games-empty" class="gr-message gr-hidden" />
+        <ui:Label name="games-message" class="gr-message gr-hidden" />
+    </ui:VisualElement>
+</ui:UXML>

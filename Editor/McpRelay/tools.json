@@ -1,0 +1,26 @@
+{
+  "instructions": "Tools for the Unity project open in the Unity Editor, provided by the GameRebellion SDK. Call unity_status first to see the project's SDK version, settings and last compile. Use unity_get_sdk_reference for exact GameRebellion SDK signatures instead of guessing them. After editing C# scripts, call unity_compile and fix every error it reports before moving on. Unity may be reloading scripts for a few seconds after a compile; the tools wait for it.",
+  "tools": [
+    {
+      "name": "unity_status",
+      "title": "Unity project status",
+      "description": "Where this Unity project stands with GameRebellion: Unity and SDK versions, the settings asset and its environment, whether automatic purchase tracking is on, the signed-in developer and connected game, whether Unity is compiling or in play mode, and the last compile result.",
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false }
+    },
+    {
+      "name": "unity_get_sdk_reference",
+      "title": "GameRebellion SDK reference",
+      "description": "The public API of the GameRebellion SDK installed in this project, read from the assembly itself: every GameRebellion.* method with its parameters, the SDK's enums, and every Gr*Event model with its fields and types. Use it for exact signatures; it marks calls that shouldn't be used.",
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false }
+    },
+    {
+      "name": "unity_compile",
+      "title": "Compile scripts",
+      "description": "Makes Unity pick up script changes on disk and compile them, then returns the errors and warnings. Call it after editing C# files. It waits for the compile, and for the script reload that follows, so it can take tens of seconds. Writes no files.",
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "annotations": { "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+    }
+  ]
+}

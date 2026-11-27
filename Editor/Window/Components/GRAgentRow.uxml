@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="agent-row" class="gr-ai-row">
+        <ui:VisualElement name="agent-dot" class="gr-status-dot" />
+        <ui:VisualElement class="gr-ai-row__text">
+            <ui:Label name="agent-name" class="gr-ai-row__name" />
+            <ui:Label name="agent-detail" class="gr-ai-row__detail" />
+        </ui:VisualElement>
+        <ui:Button name="agent-connect" class="gr-button gr-button--small gr-ai-row__button" />
+    </ui:VisualElement>
+</ui:UXML>

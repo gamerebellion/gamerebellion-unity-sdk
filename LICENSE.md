@@ -2,7 +2,7 @@
 
 **Package:** com.gamerebellion.sdk (Unity)
 **Company:** GameRebellion Inc.
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last updated:** August 17, 2026
 
 > This agreement governs your use of the GameRebellion SDK in every form in which it is distributed — including the **Unity package** (`com.gamerebellion.sdk`) and the **Unreal Engine plugin** (`gamerebellion-unreal-sdk`) — referred to throughout as "the SDK".

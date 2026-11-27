@@ -62,5 +62,36 @@ namespace GameRebellionSdk.Unity
             "Granted replays them so the launch session_start survives the prompt, Denied " +
             "discards them.")]
         public bool RequireConsent = false;
+
+        /// <summary>
+        /// Opt in to automatic in-app purchase reporting. Read by editor code only --
+        /// see GRIapDefineSync. Changing it rewrites a scripting define, so it takes
+        /// effect on the next build, not at runtime.
+        /// </summary>
+        /// <summary>
+        /// How long the app may sit in the background before the session ends.
+        /// 0 restores the old behaviour of ending it the instant the app is
+        /// backgrounded.
+        /// </summary>
+        [Tooltip(
+            "How long (seconds) the app may stay in the background before the " +
+            "session is considered over.\n\n" +
+            "30 by default. Without it, every trip out of the app costs a session: " +
+            "a purchase sheet, a rewarded ad, a screenshot or a glance at a " +
+            "notification each end one session and start another, inflating your " +
+            "session count and dragging average duration toward zero.\n\n" +
+            "Set to 0 to end the session the moment the app is backgrounded.")]
+        [Range(0, 1800)]
+        public int SessionResumeGraceSeconds = 30;
+
+        [Header("Monetization")]
+        [Tooltip(
+            "Automatically report in-app purchases to GameRebellion.\n\n" +
+            "Off by default: purchases are reported only when the game calls " +
+            "TrackTransaction itself.\n\n" +
+            "When enabled, the SDK observes the platform store directly - StoreKit " +
+            "on iOS/macOS - and reports purchases with no per-purchase game code. " +
+            "Requires iOS 15 or newer. Changing this requires a rebuild.")]
+        public bool AutoTrackPurchases = false;
     }
 }

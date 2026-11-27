@@ -12,6 +12,22 @@ public class GrTransactionEvent
     public string PlatformFee;
     public string Status;
     public string FailureReason;
+
+    // Store purchase fields. Filled in automatically when purchase auto-tracking
+    // is on; a game calling TrackTransaction by hand leaves them null and gets
+    // exactly the payload it has always sent.
+    public string ProductId;
+    public string TransactionId;
+
+    /// <summary>True for a sandbox or Xcode-StoreKit purchase, so test revenue is not counted as real.</summary>
+    public bool? IsSandbox;
+
+    /// <summary>
+    /// When the purchase happened, ISO-8601, if that is not simply "now" -- a
+    /// restored purchase is weeks old and would otherwise be counted as today's
+    /// revenue.
+    /// </summary>
+    public string OccurredAt;
 }
 
 [Serializable]

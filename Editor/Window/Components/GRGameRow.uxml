@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="game-row" class="gr-game-row">
+        <ui:VisualElement class="gr-game-row__radio" />
+        <ui:VisualElement class="gr-game-row__text">
+            <ui:Label name="game-name" class="gr-game-row__name" />
+            <ui:Label name="game-meta" class="gr-game-row__meta" />
+        </ui:VisualElement>
+        <ui:Label text="Connected" class="gr-game-row__badge" />
+        <ui:Label text="Disabled" class="gr-game-row__badge gr-game-row__badge--disabled" />
+    </ui:VisualElement>
+</ui:UXML>

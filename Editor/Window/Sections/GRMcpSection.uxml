@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="gr-section">
+        <ui:VisualElement class="gr-section__header">
+            <ui:Label text="Coding agents" class="gr-section__title" />
+            <ui:Button name="refresh-agents-button" text="Refresh" class="gr-button gr-button--small" />
+        </ui:VisualElement>
+        <ui:Label text="Connect sets up both GameRebellion MCP servers for your coding agent: gr-mcp says what to track, the Unity MCP finds where and checks it fires." class="gr-text--muted gr-text--wrap" />
+        <ui:VisualElement name="agents-list" class="gr-servers" />
+        <ui:VisualElement class="gr-row">
+            <ui:Label text="Another agent, or Rider?" class="gr-text--muted gr-servers__other" />
+            <ui:Button name="copy-config-button" text="Copy config" class="gr-button gr-button--small" />
+        </ui:VisualElement>
+        <ui:Label name="servers-note" class="gr-servers__note gr-text--muted gr-text--small gr-text--wrap" />
+        <ui:Label name="bridge-problem" class="gr-message gr-hidden" />
+        <ui:Label name="mcp-message" class="gr-message gr-hidden" />
+    </ui:VisualElement>
+</ui:UXML>

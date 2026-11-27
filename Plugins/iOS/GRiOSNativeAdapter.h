@@ -56,6 +56,21 @@ const char* gr_ios_get_search_ads_token(void);
 const char* gr_ios_get_connection_type(void);  // "wifi", "cellular", "none"
 const char* gr_ios_get_carrier_name(void);
 
+// In-App Purchases (StoreKit 2 observer, GRStoreKitObserver.swift)
+//
+// Implemented in Swift and exported with @_cdecl, so these are callable from C
+// but have no Obj-C counterpart to import. Declared here because this header is
+// the SDK's whole native surface and the Unreal plugin resolves against it.
+//
+// The observer reports purchases as one flat JSON document each; the callback's
+// string is valid only for the duration of the call, so copy what you keep.
+typedef void (*GRPurchaseCallback)(const char* purchaseJson);
+
+void gr_ios_iap_set_callback(GRPurchaseCallback callback);
+int gr_ios_iap_start_observer(void);   // 1 observing, 0 if the OS predates StoreKit 2
+void gr_ios_iap_stop_observer(void);
+int gr_ios_iap_is_supported(void);     // 1 when this OS can observe purchases at all
+
 // Memory Management
 void gr_ios_free_string(char* str);  // Free strings returned by above functions
 

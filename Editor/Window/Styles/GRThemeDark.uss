@@ -1,0 +1,21 @@
+/* Colours for the dark (Pro) editor skin. GRThemeLight.uss defines the same names.
+   Neutrals sit close to Unity's own so the window looks native; the accent is the
+   GameRebellion brand magenta, sampled from the logo. */
+.gr-root {
+    --gr-color-text: #D2D2D2;
+    --gr-color-text-muted: #969696;
+    --gr-color-surface: #383838;
+    --gr-color-surface-raised: #414141;
+    --gr-color-surface-sunken: #2D2D2D;
+    --gr-color-border: #232323;
+    --gr-color-accent: #DF07B9;
+    --gr-color-accent-hover: #E83AC8;
+    --gr-color-accent-soft: rgba(223, 7, 185, 0.16);
+    --gr-color-on-accent: #FFFFFF;
+    --gr-color-ok: #5BB060;
+    --gr-color-ok-soft: rgba(91, 176, 96, 0.18);
+    --gr-color-warn: #D9A13B;
+    --gr-color-warn-soft: rgba(217, 161, 59, 0.18);
+    --gr-color-error: #E06B67;
+    --gr-color-error-soft: rgba(217, 83, 79, 0.18);
+}

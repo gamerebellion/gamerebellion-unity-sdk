@@ -53,7 +53,8 @@ namespace GameRebellionSdk.Unity.Adapters
                     config.BatchMaxEvents,
                     config.FlushIntervalMs,
                     enableCompression: true,
-                    autoTrackSession: true
+                    autoTrackSession: true,
+                    sessionResumeGraceSeconds: config.SessionResumeGraceSeconds
                 );
                 UnityEngine.Debug.Log($"[AndroidAdapter] Initialize returned: {result}");
                 return result;
@@ -320,7 +321,8 @@ namespace GameRebellionSdk.Unity.Adapters
 
             return global::GameRebellionSdk.Core.GameRebellionUnityAPI.TrackTransaction(
                 evt.Amount, evt.Currency, evt.Type, evt.Description, evt.TransactionHash,
-                evt.UsdValue, evt.PlatformFee, evt.Status, evt.FailureReason);
+                evt.UsdValue, evt.PlatformFee, evt.Status, evt.FailureReason,
+                evt.ProductId, evt.TransactionId, evt.IsSandbox, evt.OccurredAt);
         }
 
         public int TrackCryptoTransaction(GrCryptoTransactionEvent evt)

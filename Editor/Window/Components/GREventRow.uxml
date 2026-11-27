@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="row" class="gr-event-row">
+        <ui:Label name="time" class="gr-event-row__time" />
+        <ui:Label name="event-name" class="gr-event-row__name" />
+        <ui:Label name="payload" class="gr-event-row__payload" />
+        <ui:Label name="site" class="gr-event-row__site" />
+    </ui:VisualElement>
+</ui:UXML>
